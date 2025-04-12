@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .avatar {
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            color: #666;
+        }
+        form {
+            margin-top: 1rem;
+        }
+        input[type="file"] {
+            margin: 1rem 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .messages {
+            margin-top: 2rem;
+            text-align: left;
+        }
+        .messages ul {
+            list-style: none;
+            padding: 0;
+        }
+        .messages li {
+            background: #f9f9f9;
+            margin: 0.5rem 0;
+            padding: 1rem;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .messages li form {
+            margin: 0;
+        }
+        .messages li button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .messages li button:hover {
+            background-color: #c0392b;
+        }
+        a {
+            display: inline-block;
+            margin-top: 1rem;
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        input[name="csrf_token"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Your Profile</h1>
+        {% if user.avatar %}
+            <img src="{{ user.avatar }}" alt="Avatar" class="avatar">
+        {% else %}
+            <img src="{{ url_for('static', filename='uploads/default.png') }}" alt="Default Avatar" class="avatar">
+        {% endif %}
+        <p>Username: {{ user.username }}</p>
+        <form action="{{ url_for('profile') }}" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <label for="avatar">Upload new avatar:</label>
+            <input type="file" id="avatar" name="avatar" accept="image/*">
+            <br>
+            <button type="submit">Update Avatar</button>
+        </form>
+
+        <div class="messages">
+            <h2>Your Posts</h2>
+            <ul>
+                {% for message in user_messages %}
+                    <li>
+                        <span>{{ message.content }}</span>
+                        <form action="{{ url_for('delete_message', message_id=message.id) }}" method="POST">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submit">Delete</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <a href="{{ url_for('home') }}">Back to Home</a>
+    </div>
+</body>
+</html>

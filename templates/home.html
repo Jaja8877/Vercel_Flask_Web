@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+        .auth-links {
+            position: absolute;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+        }
+        .auth-links a, .auth-links span {
+            color: white;
+            text-decoration: none;
+            margin: 0 0.5rem;
+            font-weight: bold;
+        }
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .profile {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .profile img {
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+        .profile h2 {
+            margin: 0;
+            color: #333;
+        }
+        .profile p {
+            color: #666;
+        }
+        .messages {
+            margin-top: 2rem;
+        }
+        .messages ul {
+            list-style: none;
+            padding: 0;
+        }
+        .messages li {
+            background: #f9f9f9;
+            margin: 0.5rem 0;
+            padding: 1rem;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+        }
+        .messages img {
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+        form textarea {
+            width: 100%;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: none;
+        }
+        form button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        form button:hover {
+            background-color: #45a049;
+        }
+        .profile img, .messages img {
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Website</h1>
+        <div class="auth-links">
+            {% if 'user_id' in session %}
+                <span>Hello, {{ session['username'] }}!</span>
+                <a href="{{ url_for('logout') }}">Logout</a>
+                <a href="{{ url_for('profile') }}">Profile</a> <!-- Added Profile link -->
+            {% else %}
+                <span>Hello, Guest!</span>
+                <a href="{{ url_for('login') }}">Login</a>
+            {% endif %}
+        </div>
+    </header>
+    <div class="container">
+        <div class="profile">
+            <img src="{{ url_for('static', filename='uploads/owner_avatar.png') }}" alt="Owner Avatar">
+            <h2>玖藍</h2>
+            <p>我是一個生存在地球上的人，喜歡看動漫和打電動，請多多指教！</p>
+            <br>
+            <p>這是我的個人網站，歡迎留言聊天或抒發情緒。</p> 
+            <br>
+            <p>記得要先註冊帳號才可以留言喔！</p>
+        </div>
+
+        <div class="messages">
+            <h2>Messages</h2>
+            <ul>
+                {% for message in messages %}
+                    <li>
+                        {% if message.user_avatar %}
+                            <img src="{{ message.user_avatar }}" alt="Avatar" class="avatar">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='uploads/default.png') }}" alt="Default Avatar" class="avatar">
+                        {% endif %}
+                        <strong>{{ message.username }}</strong>: {{ message.content }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        {% if 'user_id' in session %}
+            <form action="{{ url_for('message') }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <textarea name="content" placeholder="Leave a message..." required></textarea>
+                <button type="submit">Post</button>
+            </form>
+        {% endif %}
+    </div>
+</body>
+</html>
